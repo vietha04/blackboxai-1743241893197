@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Card, Button, Spinner, Form, Offcanvas } from 'react-bootstrap';
+import { Card, Button, Spinner, Offcanvas } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
-  faBookmark, 
-  faSearch,
   faArrowLeft,
   faArrowRight,
   faSun,
   faMoon,
-  faFont,
   faList
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -22,13 +19,8 @@ function Reader() {
   const history = useHistory();
 
   // Reader preferences state
-  const [fontSize, setFontSize] = useState(16);
   const [darkMode, setDarkMode] = useState(false);
-  const [lineHeight, setLineHeight] = useState(1.5);
-  const [showControls, setShowControls] = useState(true);
   const [showChapters, setShowChapters] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
 
   // Fetch novel data
   useEffect(() => {
@@ -71,16 +63,6 @@ function Reader() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePrevChapter, handleNextChapter]);
 
-  // Handle search
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      history.push(`/novel/${id}/chapter/${chapterIndex}?search=${searchQuery}`);
-    } else {
-      history.push(`/novel/${id}/chapter/${chapterIndex}`);
-    }
-  };
-
   if (loading) return <Spinner animation="border" />;
   if (error) return <div>Error: {error}</div>;
   if (!novel || !novel.chapters[chapterIndex]) return <div>Chapter not found</div>;
@@ -121,10 +103,7 @@ function Reader() {
             </Button>
           </div>
 
-          <div 
-            className="chapter-content"
-            style={{ fontSize: `${fontSize}px`, lineHeight: lineHeight }}
-          >
+          <div className="chapter-content">
             {currentChapter.content}
           </div>
         </Card.Body>
@@ -139,7 +118,7 @@ function Reader() {
             {novel.chapters.map((chap, idx) => (
               <div 
                 key={idx}
-                className={`chapter-item ${idx == chapterIndex ? 'active' : ''}`}
+                className={`chapter-item ${idx === chapterIndex ? 'active' : ''}`}
                 onClick={() => {
                   history.push(`/novel/${id}/chapter/${idx}`);
                   setShowChapters(false);
